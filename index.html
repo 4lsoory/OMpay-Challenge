@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMPAY Knowledge Quest</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a40 50%, #2d2d5a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .home-screen {
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #00d4ff;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #ff0080, #00d4ff);
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(255, 0, 128, 0.3);
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 0, 128, 0.5);
+            background: linear-gradient(45deg, #ff0080, #00d4ff, #ff0080);
+            background-size: 200% 200%;
+            animation: gradientShift 2s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .game-screen {
+            width: 100%;
+            max-width: 800px;
+            display: none;
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .score {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 25px;
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .home-btn {
+            background: rgba(255, 0, 128, 0.2);
+            border: 2px solid #ff0080;
+            color: #ff0080;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .home-btn:hover {
+            background: rgba(255, 0, 128, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .question-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 rgba(0, 212, 255, 0.4); }
+            50% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 212, 255, 0.6); }
+        }
+        
+        .question-number {
+            color: #ff0080;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .question-text {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.4;
+            text-align: center;
+        }
+        
+        .reveal-btn {
+            background: linear-gradient(45deg, #00d4ff, #0080ff);
+            border: none;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            display: block;
+            margin: 2rem auto;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 132, 255, 0.3);
+        }
+        
+        .reveal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 132, 255, 0.5);
+        }
+        
+        .answer-card {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid rgba(0, 255, 0, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+            display: none;
+            animation: expandIn 0.5s ease-out;
+        }
+        
+        @keyframes expandIn {
+            0% { 
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .answer-text {
+            color: #00ff00;
+            font-size: 1.4rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        .next-btn {
+            background: linear-gradient(45deg, #ff0080, #ff4040);
+            border: none;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 2rem auto 0;
+            display: block;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(255, 0, 128, 0.3);
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 0, 128, 0.5);
+        }
+        
+        .completion-screen {
+            text-align: center;
+            display: none;
+            animation: zoomIn 0.8s ease-out;
+        }
+        
+        .completion-title {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #00ff00, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+        
+        .final-score {
+            font-size: 2rem;
+            color: #00d4ff;
+            margin-bottom: 3rem;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(45deg, #00d4ff, #ff0080);
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+        
+        .restart-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.5);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .question-text {
+                font-size: 1.4rem;
+            }
+            
+            .answer-text {
+                font-size: 1.2rem;
+            }
+            
+            .question-card, .answer-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="particles"></div>
+    
+    <div class="container">
+        <!-- Home Screen -->
+        <div class="home-screen" id="homeScreen">
+            <h1 class="logo">OMPAY</h1>
+            <h2 class="subtitle">Knowledge Quest</h2>
+            <button class="start-btn" onclick="startGame()">Start Mission</button>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="header">
+                <div class="score" id="scoreDisplay">Score: 0/8</div>
+                <button class="home-btn" onclick="goHome()">🏠 Home</button>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-number" id="questionNumber">Question 1 of 8</div>
+                <div class="question-text" id="questionText"></div>
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                
+                <div class="answer-card" id="answerCard">
+                    <div class="answer-text" id="answerText"></div>
+                    <button class="next-btn" onclick="nextQuestion()">Next Question</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Completion Screen -->
+        <div class="completion-screen" id="completionScreen">
+            <h1 class="completion-title">Mission Complete!</h1>
+            <div class="final-score" id="finalScore">You've mastered OMPAY knowledge!</div>
+            <div>
+                <button class="restart-btn" onclick="restartGame()">New Mission</button>
+                <button class="restart-btn" onclick="goHome()">Home</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Q&A Data
+        const questionsData = [
+            {
+                question: "What is a Digital wallet?",
+                answer: "A digital wallet is a secure app on your device that lets you pay, transfer money, or manage your finances without need for physical cash or cards."
+            },
+            {
+                question: "Is using digital payments safe?",
+                answer: "Akeed! OMPAY especially uses advanced encryption and security systems so your money and personal data are fully protected."
+            },
+            {
+                question: "What is OMPAY?",
+                answer: "OMPAY is an Omani lifestyle payment app helping you shop, pay bills, transfer money, and enjoy services, all from your phone."
+            },
+            {
+                question: "How do I start using OMPAY?",
+                answer: "Easy!! Download the app from the App Store or Google Play, sign up with your mobile number, and you're ready to go."
+            },
+            {
+                question: "What can I use OMPAY for?",
+                answer: "You can pay in stores as you normally would or with QR codes, and shop online safely with OMPAY."
+            },
+            {
+                question: "Can I send money with OMPAY?",
+                answer: "Absolutely you can transfer money instantly to other OMPAY users in just a few taps and you can transfer Internationally to non-OMPAY users similar to an exchange except without the hassle."
+            },
+            {
+                question: "Is OMPAY secure?",
+                answer: "Very secure. OMPAY uses banking-grade security and advanced encryption to protect your money and data."
+            },
+            {
+                question: "What is the OMPAY Payment Gateway?",
+                answer: "It's our secure system for businesses to accept online payments easily and reliably. It accepts not only local cards but International ones."
+            }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Shuffle questions
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        // Start game
+        function startGame() {
+            document.getElementById('homeScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('completionScreen').style.display = 'none';
+            
+            // Shuffle questions and reset game state
+            questions = shuffleArray(questionsData);
+            currentQuestion = 0;
+            score = 0;
+            
+            displayQuestion();
+        }
+        
+        // Display current question
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('answerText').textContent = question.answer;
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}/${questions.length}`;
+            
+            // Reset UI state
+            document.getElementById('answerCard').style.display = 'none';
+            document.getElementById('revealBtn').style.display = 'block';
+        }
+        
+        // Reveal answer
+        function revealAnswer() {
+            document.getElementById('answerCard').style.display = 'block';
+            document.getElementById('revealBtn').style.display = 'none';
+            score++;
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}/${questions.length}`;
+        }
+        
+        // Next question
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion >= questions.length) {
+                showCompletion();
+            } else {
+                displayQuestion();
+            }
+        }
+        
+        // Show completion screen
+        function showCompletion() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('completionScreen').style.display = 'block';
+            document.getElementById('finalScore').textContent = `Perfect Score: ${score}/${questions.length} questions mastered!`;
+        }
+        
+        // Go to home
+        function goHome() {
+            document.getElementById('homeScreen').style.display = 'block';
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('completionScreen').style.display = 'none';
+        }
+        
+        // Restart game
+        function restartGame() {
+            startGame();
+        }
+        
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+    </script>
+</body>
+</html>
